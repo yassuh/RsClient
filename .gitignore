@@ -1,0 +1,3 @@
+installers/*.deb
+installers/*.rpm
+.env

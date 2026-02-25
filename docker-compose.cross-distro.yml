@@ -1,0 +1,5 @@
+services:
+  realityscan:
+    volumes:
+      - ${RS_HOST_LIBGLX_NVIDIA_PATH:-/lib/x86_64-linux-gnu/libGLX_nvidia.so.0}:/usr/lib64/libGLX_nvidia.so.0:ro
+      - ${RS_HOST_LIBNVIDIA_GLCORE_PATH:-/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.1}:/usr/lib64/libnvidia-glcore.so.1:ro
