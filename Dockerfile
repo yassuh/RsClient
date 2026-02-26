@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     NVIDIA_VISIBLE_DEVICES=all \
@@ -13,8 +13,8 @@ RUN apt-get update && \
       x11-apps xauth \
       libgtk-3-0 libdbus-glib-1-2 libxt6 \
       libx11-xcb1 libxcb-shm0 libxcb-dri3-0 \
-      libxcomposite1 libasound2 \
-      libvulkan1 vulkan-tools \
+      libxcomposite1 libasound2t64 \
+      libvulkan1 vulkan-tools mesa-vulkan-drivers \
       mesa-utils && \
     rm -rf /var/lib/apt/lists/*
 

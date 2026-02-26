@@ -1,0 +1,12 @@
+services:
+  realityscan:
+    environment:
+      DISPLAY: ${DISPLAY:-:0}
+      WAYLAND_DISPLAY: ${RS_WSLG_WAYLAND_DISPLAY:-wayland-0}
+      XDG_RUNTIME_DIR: ${RS_WSLG_XDG_RUNTIME_DIR:-/mnt/wslg/runtime-dir}
+      PULSE_SERVER: ${RS_WSLG_PULSE_SERVER:-unix:/mnt/wslg/PulseServer}
+      VK_ICD_FILENAMES: ${RS_WSLG_VK_ICD_FILENAMES:-/usr/share/vulkan/icd.d/lvp_icd.x86_64.json}
+    volumes:
+      - ${RS_WSLG_MOUNT_PATH:-/mnt/wslg}:/mnt/wslg
+    devices:
+      - /dev/dxg:/dev/dxg

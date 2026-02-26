@@ -8,7 +8,10 @@ services:
     image: ${RS_IMAGE:-ubuntu-realityscan:v2.2.0.119039}
     container_name: ${RS_CONTAINER_NAME:-rsclient}
     environment:
-      DISPLAY: ${DISPLAY}
+      DISPLAY: ${DISPLAY:-:0}
+      WAYLAND_DISPLAY: ${WAYLAND_DISPLAY:-}
+      XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR:-}
+      PULSE_SERVER: ${PULSE_SERVER:-}
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: all
       RS_SKIP_PREFLIGHT: ${RS_SKIP_PREFLIGHT:-0}
@@ -16,8 +19,6 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ${RS_HOST_DOWNLOADS:-./host-data}:/mnt/host
       - ${RS_HOST_VULKAN_ICD_PATH:-/etc/vulkan/icd.d}:/usr/share/vulkan/icd.d:ro
-    devices:
-      - /dev/dri:/dev/dri
     gpus: all
     stdin_open: true
     tty: true

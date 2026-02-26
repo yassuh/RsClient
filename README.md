@@ -4,7 +4,7 @@ This repository is configured to run **RealityScan for Linux** inside Docker wit
 
 ## What this deployment provides
 
-- Ubuntu 22.04 based container image for the RealityScan `.deb` package
+- Ubuntu 24.04 based container image for the RealityScan `.deb` package
 - Docker Compose setup for same-distro and cross-distro host/container scenarios
 - Preflight scripts for host and container GPU/Vulkan checks
 - Repeatable run path for local, cloud, and CI environments
@@ -31,6 +31,8 @@ If `nvidia-smi` or `vulkaninfo` fail, fix host drivers/runtime before building t
 - `Dockerfile`: Builds RealityScan runtime image
 - `docker-compose.yml`: Default same-distro runtime
 - `docker-compose.cross-distro.yml`: Extra NVIDIA library mappings for mixed distros
+- `docker-compose.wslg.yml`: WSLg Wayland display/runtime overlay
+- `docker-compose.dri.yml`: Optional `/dev/dri` passthrough overlay (auto-used when available)
 - `scripts/`: Helper scripts for build/run/verification
 - `installers/`: Place RealityScan installer package here (`.deb`)
 
@@ -44,6 +46,7 @@ cp .env.example .env
 ```
 
 1. Adjust `.env` values if needed (image tag, host mounts, optional cross-distro library paths)
+1. For WSL/WSLg, keep `RS_HOST_VULKAN_ICD_PATH=/usr/share/vulkan/icd.d`
 1. Ensure shared Docker network exists:
 
 ```bash
@@ -87,6 +90,18 @@ Cross-distro host/container:
 bash scripts/run-realityscan.sh cross-distro
 ```
 
+WSLg Wayland:
+
+```bash
+bash scripts/run-realityscan.sh wsl-wayland
+```
+
+Direct compose equivalent:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.wslg.yml up -d realityscan
+```
+
 Restart stopped session:
 
 ```bash
@@ -97,6 +112,7 @@ docker compose start -a realityscan
 
 ```bash
 bash scripts/verify-gpu.sh
+bash scripts/verify-gpu.sh wsl-wayland
 ```
 
 Inside the running container you can also test:
@@ -109,5 +125,11 @@ Inside the running container you can also test:
 ## Troubleshooting
 
 - `Cannot create Vulkan instance`: map additional NVIDIA `.so` files in `docker-compose.cross-distro.yml`.
+- On WSL, ensure `RS_HOST_VULKAN_ICD_PATH=/usr/share/vulkan/icd.d` and rebuild after Dockerfile changes.
+- On WSL, `/dev/dxg` is passed through in `docker-compose.wslg.yml` for Vulkan GPU enumeration.
+- On WSL, default `RS_WSLG_VK_ICD_FILENAMES` is `lvp_icd.x86_64.json` for reliable startup (CPU Vulkan fallback).
+- On WSL, `gfxstream`/`virtio` ICDs may fail physical GPU enumeration in Docker containers.
 - Black dialogs: known Wine behavior; press `Enter`.
 - Epic login issues: install browser components inside the container.
+- `no such service: realityscan/`: use `realityscan` (without the trailing slash).
+- `/dev/dri: no such file or directory`: expected on many WSL setups; this project now applies `/dev/dri` only when it exists.

@@ -23,7 +23,7 @@
 
 ### `Dockerfile`
 
-- Builds from Ubuntu 22.04
+- Builds from Ubuntu 24.04
 - Installs system dependencies required for RealityScan/Wine GUI + Vulkan
 - Installs RealityScan from `.deb`
 - Uses `scripts/container-entrypoint.sh` to run optional startup checks
@@ -31,7 +31,7 @@
 ### `docker-compose.yml`
 
 - Primary service definition for same-distro deployment
-- Configures GPU access (`gpus: all`) and `/dev/dri`
+- Configures GPU access (`gpus: all`)
 - Mounts X11 socket and host working directory
 - Mounts Vulkan ICD path configurable via `RS_HOST_VULKAN_ICD_PATH`
 - Attaches `realityscan` service to external Docker network `studio-network`
@@ -40,6 +40,18 @@
 
 - Overlay for mixed distro host/container setups
 - Adds explicit NVIDIA library mounts when autodiscovery fails
+
+### `docker-compose.wslg.yml`
+
+- Overlay for WSLg Wayland display/audio runtime
+- Maps `/mnt/wslg` and sets Wayland/XDG/Pulse env defaults for container GUI sessions
+- Defaults to `lvp` ICD (`RS_WSLG_VK_ICD_FILENAMES`) for stable Vulkan initialization on WSL
+- Maps `/dev/dxg` for WSL GPU access inside the container
+
+### `docker-compose.dri.yml`
+
+- Optional overlay that maps `/dev/dri` for hosts where it exists
+- Applied automatically by helper scripts when `/dev/dri` is present
 
 ### `scripts/host-preflight.sh`
 
@@ -55,11 +67,12 @@
 ### `scripts/run-realityscan.sh`
 
 - Enables local Docker X11 access (`xhost +local:docker` when available)
-- Runs compose service with `up` in same-distro or cross-distro mode for restartable sessions
+- Runs compose service with `up` in `same-distro`, `cross-distro`, or `wsl-wayland` mode for restartable sessions
 
 ### `scripts/verify-gpu.sh`
 
 - Runs `nvidia-smi` and `vulkaninfo --summary` inside container
+- Supports `same-distro`, `cross-distro`, and `wsl-wayland` compose overlays
 - Used to confirm GPU passthrough and Vulkan availability post-build
 
 ### `scripts/container-entrypoint.sh`
@@ -86,3 +99,8 @@ Environment values are controlled through `.env` (copy from `.env.example`):
 - `RS_HOST_VULKAN_ICD_PATH`
 - `RS_HOST_LIBGLX_NVIDIA_PATH`
 - `RS_HOST_LIBNVIDIA_GLCORE_PATH`
+- `RS_WSLG_MOUNT_PATH`
+- `RS_WSLG_WAYLAND_DISPLAY`
+- `RS_WSLG_XDG_RUNTIME_DIR`
+- `RS_WSLG_PULSE_SERVER`
+- `RS_WSLG_VK_ICD_FILENAMES`
