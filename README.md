@@ -33,6 +33,7 @@ If `nvidia-smi` or `vulkaninfo` fail, fix host drivers/runtime before building t
 - `docker-compose.cross-distro.yml`: Extra NVIDIA library mappings for mixed distros
 - `docker-compose.wslg.yml`: WSLg Wayland display/runtime overlay
 - `docker-compose.dri.yml`: Optional `/dev/dri` passthrough overlay (auto-used when available)
+- `docker-compose.rsnode.yml`: RSNode service mode (`RSNode.exe`) with restart policy and published port
 - `scripts/`: Helper scripts for build/run/verification
 - `installers/`: Place RealityScan installer package here (`.deb`)
 
@@ -106,6 +107,40 @@ Restart stopped session:
 
 ```bash
 docker compose start -a realityscan
+```
+
+## Run RSNode Server
+
+Start RSNode as the container main process (container exits if RSNode exits, Docker restarts it):
+
+```bash
+bash scripts/run-rsnode.sh
+```
+
+WSLg Wayland mode:
+
+```bash
+bash scripts/run-rsnode.sh wsl-wayland
+```
+
+RSNode defaults are controlled via `.env`:
+
+```bash
+RSNODE_HOST_ADDRESS=0.0.0.0
+RSNODE_PORT=7878
+RSNODE_LANDING_PAGE=/static/MyApp.html
+```
+
+Access from host at:
+
+```text
+http://<host-ip>:7878/static/MyApp.html
+```
+
+Watch RSNode logs:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.rsnode.yml logs -f realityscan
 ```
 
 ## Validate GPU inside container

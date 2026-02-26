@@ -1,0 +1,18 @@
+services:
+  realityscan:
+    restart: unless-stopped
+    ports:
+      - "${RSNODE_PORT:-7878}:${RSNODE_PORT:-7878}"
+    command:
+      - /opt/realityscan/bin/wine
+      - --wait-children
+      - --bottle=default
+      - --workdir
+      - "C:/Program Files/Epic Games/RealityScan"
+      - RSNode.exe
+      - -hostAddress
+      - "${RSNODE_HOST_ADDRESS:-0.0.0.0}"
+      - -port
+      - "${RSNODE_PORT:-7878}"
+      - -landingPage
+      - "${RSNODE_LANDING_PAGE:-/static/MyApp.html}"

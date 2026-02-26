@@ -48,6 +48,12 @@
 - Defaults to `lvp` ICD (`RS_WSLG_VK_ICD_FILENAMES`) for stable Vulkan initialization on WSL
 - Maps `/dev/dxg` for WSL GPU access inside the container
 
+### `docker-compose.rsnode.yml`
+
+- Overlay that runs `RSNode.exe` as the primary container process
+- Publishes RSNode port from container to host (`RSNODE_PORT`)
+- Configures container restart policy (`unless-stopped`) for node service resiliency
+
 ### `docker-compose.dri.yml`
 
 - Optional overlay that maps `/dev/dri` for hosts where it exists
@@ -68,6 +74,12 @@
 
 - Enables local Docker X11 access (`xhost +local:docker` when available)
 - Runs compose service with `up` in `same-distro`, `cross-distro`, or `wsl-wayland` mode for restartable sessions
+
+### `scripts/run-rsnode.sh`
+
+- Starts RSNode service mode using `docker-compose.rsnode.yml`
+- Supports `same-distro`, `cross-distro`, and `wsl-wayland` overlays
+- Keeps container lifecycle tied to RSNode process with Docker restart policy
 
 ### `scripts/verify-gpu.sh`
 
@@ -99,6 +111,9 @@ Environment values are controlled through `.env` (copy from `.env.example`):
 - `RS_HOST_VULKAN_ICD_PATH`
 - `RS_HOST_LIBGLX_NVIDIA_PATH`
 - `RS_HOST_LIBNVIDIA_GLCORE_PATH`
+- `RSNODE_HOST_ADDRESS`
+- `RSNODE_PORT`
+- `RSNODE_LANDING_PAGE`
 - `RS_WSLG_MOUNT_PATH`
 - `RS_WSLG_WAYLAND_DISPLAY`
 - `RS_WSLG_XDG_RUNTIME_DIR`
